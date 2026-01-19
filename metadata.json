@@ -1,0 +1,5 @@
+{
+  "name": "Zephyria Blockchain",
+  "description": "A futuristic, high-performance blockchain platform featuring the JoyboyVM JIT EVM, capable of 1M+ TPS with register-allocated execution and a custom ultra-fast database layer.",
+  "requestFramePermissions": []
+}
