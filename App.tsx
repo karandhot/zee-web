@@ -10,6 +10,10 @@ import { Zap, Rocket, ChevronRight, Github, Activity, Database } from 'lucide-re
 
 const OrbitControls = DreiOrbitControls as any;
 
+// Type workarounds for R3F intrinsic elements failing TS checks
+const AmbientLight = 'ambientLight' as any;
+const PointLight = 'pointLight' as any;
+
 const App: React.FC = () => {
   return (
     <div className="min-h-screen bg-slate-950 text-white selection:bg-cyan-500/30">
@@ -25,9 +29,10 @@ const App: React.FC = () => {
               <FloatingCore />
               <ContactShadows position={[0, -4.5, 0]} opacity={0.4} scale={20} blur={2} far={4.5} />
               <OrbitControls enableZoom={false} autoRotate autoRotateSpeed={0.5} />
-              <ambientLight intensity={0.5} />
-              <pointLight position={[10, 10, 10]} intensity={1.5} color="#0ea5e9" />
-              <pointLight position={[-10, -10, -10]} intensity={0.5} color="#4f46e5" />
+              {/* Fix: Using casted variables to avoid JSX intrinsic element errors */}
+              <AmbientLight intensity={0.5} />
+              <PointLight position={[10, 10, 10]} intensity={1.5} color="#0ea5e9" />
+              <PointLight position={[-10, -10, -10]} intensity={0.5} color="#4f46e5" />
             </Suspense>
           </Canvas>
         </div>
