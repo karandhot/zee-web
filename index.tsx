@@ -4,21 +4,24 @@
  */
 
 // Initialize Lucide Icons Globally
-// Fixed: Cast window to any to access global 'lucide' library loaded via CDN
-if ((window as any).lucide) {
-  // Fixed: Cast window to any to access global 'lucide' library loaded via CDN
-  (window as any).lucide.createIcons();
-}
+const initIcons = () => {
+  const lucide = (window as any).lucide;
+  if (lucide) {
+    lucide.createIcons();
+    console.log("Lucide Icons Initialized");
+  } else {
+    // Retry if script not yet available
+    setTimeout(initIcons, 100);
+  }
+};
 
 /**
  * 3D Background System - Powered by Three.js
  */
 const initThreeScene = () => {
-  const canvas = document.getElementById('three-canvas');
-  // Fixed: Cast window to any to access global 'THREE' library loaded via CDN
+  const canvas = document.getElementById('three-canvas') as HTMLCanvasElement;
   if (!canvas || !(window as any).THREE) return;
 
-  // Fixed: Cast window to any to access global 'THREE' library loaded via CDN
   const THREE = (window as any).THREE;
   const scene = new THREE.Scene();
   const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
@@ -49,7 +52,7 @@ const initThreeScene = () => {
   scene.add(core);
 
   // Orbital Ring System
-  const rings = [];
+  const rings: any[] = [];
   const ringCount = 4;
   for (let i = 0; i < ringCount; i++) {
     const ringGeo = new THREE.TorusGeometry(3.5 + i * 1.2, 0.015, 16, 100);
@@ -154,7 +157,7 @@ const initPerformanceChart = () => {
     area.setAttribute('d', `${pathData} L 100 100 L 0 100 Z`);
 
     // Update Counter (Simulating k-TPS)
-    const currentTps = Math.floor(700 + newVal * 6);
+    const currentTps = Math.floor(850 + newVal * 2.5);
     tpsDisplay.innerText = currentTps + "k";
   };
 
@@ -168,6 +171,7 @@ const initPerformanceChart = () => {
  */
 document.addEventListener('DOMContentLoaded', () => {
   console.log("ZEPH Engine Initialized");
+  initIcons();
   initThreeScene();
   initPerformanceChart();
 });
