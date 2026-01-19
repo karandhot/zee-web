@@ -3,97 +3,198 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ZEPH | 1M+ TPS Register-Allocated Blockchain</title>
+  <meta name="description" content="Zeph is the next-gen high-performance blockchain.">
   
-  <!-- SEO Meta Tags for zephyria.site -->
-  <title>Zephyria | 1M+ TPS Register-Allocated Blockchain</title>
-  <meta name="title" content="Zephyria | 1M+ TPS Register-Allocated Blockchain">
-  <meta name="description" content="Zephyria is the world's first register-allocated EVM blockchain powered by JoyboyVM. Achieve 1 Million+ TPS with sub-second finality.">
-  <meta name="keywords" content="Zephyria, Blockchain, JoyboyVM, EVM, TPS, High Performance, Web3, Crypto, Layer 1, Smart Contracts">
-  <meta name="robots" content="index, follow">
-  <meta name="language" content="English">
-  <link rel="canonical" href="https://zephyria.site" />
-
-  <!-- Open Graph / Facebook -->
-  <meta property="og:type" content="website">
-  <meta property="og:url" content="https://zephyria.site">
-  <meta property="og:title" content="Zephyria | 1M+ TPS Register-Allocated Blockchain">
-  <meta property="og:description" content="Scaling decentralized applications to millions of users with the JoyboyVM JIT engine. Silicon-level efficiency.">
-  <meta property="og:image" content="https://zephyria.site/og-image.png">
-
-  <!-- Twitter -->
-  <meta property="twitter:card" content="summary_large_image">
-  <meta property="twitter:url" content="https://zephyria.site">
-  <meta property="twitter:title" content="Zephyria | 1M+ TPS Register-Allocated Blockchain">
-  <meta property="twitter:description" content="Scaling decentralized applications to millions of users with the JoyboyVM JIT engine. Silicon-level efficiency.">
-  <meta property="twitter:image" content="https://zephyria.site/og-image.png">
-
-  <!-- Favicon -->
-  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><rect width=%22100%22 height=%22100%22 rx=%2220%22 fill=%22%230ea5e9%22/><text y=%22.9em%22 font-size=%2280%22 font-weight=%22bold%22 fill=%22white%22 x=%2210%22>Z</text></svg>">
-
+  <!-- Tailwind for Styling -->
   <script src="https://cdn.tailwindcss.com"></script>
-  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Inter:wght@400;600&display=swap" rel="stylesheet">
+  <!-- Three.js for 3D -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/0.160.0/three.min.js"></script>
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;700&family=Inter:wght@400;700&display=swap" rel="stylesheet">
   
   <style>
+    :root {
+      --cyan: #0ea5e9;
+      --indigo: #6366f1;
+      --bg: #020617;
+    }
     body {
       margin: 0;
-      font-family: 'Inter', sans-serif;
-      background: #020617;
+      background: var(--bg);
       color: #f8fafc;
+      font-family: 'Inter', sans-serif;
       overflow-x: hidden;
     }
     h1, h2, h3, .font-display {
       font-family: 'Space Grotesk', sans-serif;
     }
-    canvas { touch-action: none; }
-    #root { min-height: 100vh; display: flex; flex-direction: column; }
-    
-    /* Subtle status text instead of screen-blocking overlay */
-    #root:empty::after {
-      content: "LOADING ZEPHYRIA CORE...";
+    #three-canvas {
       position: fixed;
-      bottom: 20px;
-      right: 20px;
-      font-size: 10px;
-      letter-spacing: 2px;
-      color: #0ea5e9;
-      opacity: 0.4;
-      font-family: monospace;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 0;
+      pointer-events: none;
+    }
+    .glass {
+      background: rgba(15, 23, 42, 0.6);
+      backdrop-filter: blur(12px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    .hero-text {
+      text-shadow: 0 0 30px rgba(14, 165, 233, 0.5);
+    }
+    .stats-card {
+      background: linear-gradient(135deg, rgba(14, 165, 233, 0.1) 0%, rgba(99, 102, 241, 0.1) 100%);
+      border: 1px solid rgba(14, 165, 233, 0.2);
+    }
+    .animate-float {
+      animation: float 6s ease-in-out infinite;
+    }
+    @keyframes float {
+      0%, 100% { transform: translateY(0px); }
+      50% { transform: translateY(-20px); }
+    }
+    .chart-path {
+      transition: d 1.5s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    section {
+      position: relative;
+      z-index: 10;
     }
   </style>
-
-  <script>
-    // Polyfill process for Framer Motion and other libs
-    window.process = { env: { NODE_ENV: 'production' } };
-    
-    // Enhanced Error Reporting
-    window.addEventListener('error', function(e) {
-      console.error('Critical Error:', e.message, 'at', e.filename, ':', e.lineno);
-    });
-    window.addEventListener('unhandledrejection', function(e) {
-      console.error('Unhandled Promise Rejection:', e.reason);
-    });
-  </script>
-
-  <script type="importmap">
+<script type="importmap">
 {
   "imports": {
-    "react": "https://esm.sh/react@18.3.1",
-    "react-dom": "https://esm.sh/react-dom@18.3.1",
-    "react-dom/client": "https://esm.sh/react-dom@18.3.1/client",
-    "lucide-react": "https://esm.sh/lucide-react@0.460.0?external=react,react-dom",
-    "recharts": "https://esm.sh/recharts@2.12.7?external=react,react-dom",
-    "framer-motion": "https://esm.sh/framer-motion@11.11.17?external=react,react-dom",
-    "three": "https://esm.sh/three@0.170.0",
-    "@react-three/fiber": "https://esm.sh/@react-three/fiber@8.17.10?external=react,react-dom,three",
-    "@react-three/drei": "https://esm.sh/@react-three/drei@9.117.0?external=react,react-dom,three,@react-three/fiber",
-    "react-dom/": "https://esm.sh/react-dom@^19.2.3/",
-    "react/": "https://esm.sh/react@^19.2.3/"
+    "react": "https://esm.sh/react@^19.2.3",
+    "react/": "https://esm.sh/react@^19.2.3/",
+    "lucide-react": "https://esm.sh/lucide-react@^0.562.0",
+    "three": "https://esm.sh/three@^0.182.0",
+    "@react-three/fiber": "https://esm.sh/@react-three/fiber@^9.5.0",
+    "@react-three/drei": "https://esm.sh/@react-three/drei@^10.7.7",
+    "recharts": "https://esm.sh/recharts@^3.6.0",
+    "framer-motion": "https://esm.sh/framer-motion@^12.27.1",
+    "lucide": "https://esm.sh/lucide@^0.562.0"
   }
 }
 </script>
 </head>
 <body>
-  <div id="root"></div>
+  <canvas id="three-canvas"></canvas>
+
+  <!-- Navbar -->
+  <nav class="fixed top-0 w-full z-50 glass border-b border-white/5">
+    <div class="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 bg-gradient-to-br from-cyan-400 to-indigo-600 rounded-lg flex items-center justify-center font-black text-white text-xl rotate-45 shadow-[0_0_20px_rgba(14,165,233,0.4)]">
+          <span class="-rotate-45">Z</span>
+        </div>
+        <span class="text-2xl font-bold tracking-tighter text-white">ZEPH</span>
+      </div>
+      <div class="hidden md:flex items-center gap-8 text-sm font-medium text-slate-400">
+        <a href="#" class="hover:text-cyan-400 transition-colors">Network</a>
+        <a href="#" class="hover:text-cyan-400 transition-colors">Tech</a>
+        <a href="#" class="hover:text-cyan-400 transition-colors">Ecosystem</a>
+        <button class="px-6 py-2 bg-white text-slate-950 rounded-full font-bold hover:bg-cyan-400 transition-all active:scale-95">Build Now</button>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Hero -->
+  <section class="h-screen flex flex-col items-center justify-center pt-20 px-6 text-center">
+    <div class="max-w-4xl mx-auto">
+      <div class="inline-block px-4 py-1.5 rounded-full bg-cyan-500/10 border border-cyan-500/20 text-cyan-400 text-[10px] font-bold tracking-[0.3em] uppercase mb-8 animate-pulse">
+        JoyboyVM JIT Protocol Enabled
+      </div>
+      <h1 class="text-5xl md:text-8xl font-black mb-8 leading-[1.1] hero-text">
+        The World's Fastest<br/>
+        <span class="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-indigo-500">Execution Layer</span>
+      </h1>
+      <p class="text-lg md:text-xl text-slate-400 mb-12 max-w-2xl mx-auto leading-relaxed">
+        Scale decentralized applications to millions of users with register-allocated execution and sub-second finality.
+      </p>
+      <div class="flex flex-wrap justify-center gap-4">
+        <button class="px-8 py-4 bg-cyan-600 text-white rounded-2xl font-bold flex items-center gap-2 hover:bg-cyan-500 transition-all shadow-xl shadow-cyan-900/20">
+          Get Started <i data-lucide="chevron-right"></i>
+        </button>
+        <button class="px-8 py-4 bg-slate-900 text-white rounded-2xl font-bold border border-slate-800 hover:bg-slate-800 transition-all">
+          Whitepaper
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <!-- Performance -->
+  <section class="py-32 px-6">
+    <div class="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-20 items-center">
+      <div class="space-y-8">
+        <h2 class="text-4xl md:text-6xl font-bold leading-tight">Zero execution lag.<br/><span class="text-cyan-400">Pure velocity.</span></h2>
+        <p class="text-slate-400 text-lg">Zeph eliminates the stack-based bottlenecks of traditional EVM architectures using a custom register-allocated JIT engine.</p>
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 pt-8">
+          <div class="glass p-6 rounded-2xl">
+            <div class="text-cyan-400 mb-2 font-black text-2xl">1.2M+</div>
+            <div class="text-slate-300 font-bold uppercase text-xs tracking-widest">Peak TPS</div>
+          </div>
+          <div class="glass p-6 rounded-2xl">
+            <div class="text-indigo-400 mb-2 font-black text-2xl">240ms</div>
+            <div class="text-slate-300 font-bold uppercase text-xs tracking-widest">Finality</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Live TPS Chart -->
+      <div class="glass rounded-[2rem] p-8 border-cyan-500/20 shadow-2xl relative overflow-hidden">
+        <div class="flex justify-between items-start mb-8">
+          <div>
+            <h3 class="text-xl font-bold">Network Load</h3>
+            <p class="text-slate-500 text-sm">Real-time JoyboyVM Metrics</p>
+          </div>
+          <div class="text-right">
+            <div id="live-tps" class="text-4xl font-black text-cyan-400 tabular-nums">842k</div>
+            <div class="text-[10px] text-emerald-400 uppercase font-bold tracking-widest flex items-center justify-end gap-1">
+              <span class="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span> Live Performance
+            </div>
+          </div>
+        </div>
+        
+        <div class="h-64 w-full flex items-end">
+           <svg id="tps-chart" class="w-full h-full" preserveAspectRatio="none" viewBox="0 0 100 100">
+             <defs>
+               <linearGradient id="chart-grad" x1="0" y1="0" x2="0" y2="1">
+                 <stop offset="0%" stop-color="#0ea5e9" stop-opacity="0.3"></stop>
+                 <stop offset="100%" stop-color="#0ea5e9" stop-opacity="0"></stop>
+               </linearGradient>
+             </defs>
+             <path id="chart-area" fill="url(#chart-grad)" d="M0 100 L100 100 L100 100 L0 100 Z"></path>
+             <path id="chart-line" fill="none" stroke="#0ea5e9" stroke-width="2" vector-effect="non-scaling-stroke"></path>
+           </svg>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <section class="py-40 px-6">
+    <div class="max-w-4xl mx-auto glass p-16 rounded-[3rem] text-center border-white/5 relative group overflow-hidden">
+      <div class="absolute inset-0 bg-gradient-to-r from-cyan-500/10 to-indigo-500/10 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+      <i data-lucide="zap" class="w-16 h-16 text-cyan-400 mx-auto mb-8 animate-float"></i>
+      <h2 class="text-4xl font-bold mb-6">Build the Future on Zeph</h2>
+      <p class="text-slate-400 text-lg mb-10">Join 5,000+ developers building the next generation of hyper-scalable Web3 applications.</p>
+      <div class="flex flex-wrap justify-center gap-4">
+        <button class="px-12 py-5 bg-white text-slate-950 rounded-2xl font-bold hover:scale-105 transition-all shadow-xl">Join the Devnet</button>
+      </div>
+    </div>
+  </section>
+
+  <footer class="py-12 border-t border-white/5 text-center text-slate-500 text-sm">
+    &copy; 2025 ZEPH Protocol. All Rights Reserved. Engineered for Velocity.
+  </footer>
+
   <script type="module" src="index.tsx"></script>
 </body>
 </html>

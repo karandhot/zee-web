@@ -1,5 +1,5 @@
 {
-  "name": "zephyria-blockchain",
+  "name": "zeph-blockchain",
   "private": true,
   "version": "0.0.0",
   "type": "module",
@@ -10,13 +10,13 @@
   },
   "dependencies": {
     "react": "^19.2.3",
-    "react-dom": "^19.2.3",
-    "lucide-react": "0.460.0",
-    "recharts": "2.12.7",
-    "framer-motion": "11.11.17",
-    "three": "0.170.0",
-    "@react-three/fiber": "8.17.10",
-    "@react-three/drei": "9.117.0"
+    "lucide-react": "^0.562.0",
+    "three": "^0.182.0",
+    "@react-three/fiber": "^9.5.0",
+    "@react-three/drei": "^10.7.7",
+    "recharts": "^3.6.0",
+    "framer-motion": "^12.27.1",
+    "lucide": "^0.562.0"
   },
   "devDependencies": {
     "@types/node": "^22.14.0",
