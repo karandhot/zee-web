@@ -1,15 +1,25 @@
-// Added missing imports for THREE and lucide
-import * as THREE from 'three';
-import * as lucide from 'lucide';
+/**
+ * Zeph Protocol - Main Application Script
+ * Strictly Vanilla JavaScript (ES Modules)
+ */
 
-// Initialize Lucide Icons
-lucide.createIcons();
+// Initialize Lucide Icons Globally
+// Fixed: Cast window to any to access global 'lucide' library loaded via CDN
+if ((window as any).lucide) {
+  // Fixed: Cast window to any to access global 'lucide' library loaded via CDN
+  (window as any).lucide.createIcons();
+}
 
-// --- 3D SCENE SETUP ---
-const initThree = () => {
+/**
+ * 3D Background System - Powered by Three.js
+ */
+const initThreeScene = () => {
   const canvas = document.getElementById('three-canvas');
-  if (!canvas) return;
+  // Fixed: Cast window to any to access global 'THREE' library loaded via CDN
+  if (!canvas || !(window as any).THREE) return;
 
+  // Fixed: Cast window to any to access global 'THREE' library loaded via CDN
+  const THREE = (window as any).THREE;
   const scene = new THREE.Scene();
   const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
   const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
@@ -17,121 +27,147 @@ const initThree = () => {
   renderer.setSize(window.innerWidth, window.innerHeight);
   renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 
-  // Lights
-  const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
+  // Lighting
+  const ambientLight = new THREE.AmbientLight(0xffffff, 0.4);
   scene.add(ambientLight);
 
   const pointLight = new THREE.PointLight(0x0ea5e9, 2);
-  pointLight.position.set(5, 5, 5);
+  pointLight.position.set(10, 10, 10);
   scene.add(pointLight);
 
-  // Core Sphere
-  const geometry = new THREE.IcosahedronGeometry(2, 15);
-  const material = new THREE.MeshStandardMaterial({
+  // Central Core Entity (Energy Sphere)
+  const coreGeometry = new THREE.IcosahedronGeometry(2, 15);
+  const coreMaterial = new THREE.MeshStandardMaterial({
     color: 0x0ea5e9,
     wireframe: true,
     transparent: true,
-    opacity: 0.6,
+    opacity: 0.4,
     emissive: 0x0ea5e9,
     emissiveIntensity: 0.5
   });
-  const core = new THREE.Mesh(geometry, material);
+  const core = new THREE.Mesh(coreGeometry, coreMaterial);
   scene.add(core);
 
-  // Orbital Rings
+  // Orbital Ring System
   const rings = [];
-  const ringCount = 3;
+  const ringCount = 4;
   for (let i = 0; i < ringCount; i++) {
-    const ringGeo = new THREE.TorusGeometry(3.5 + i * 0.8, 0.02, 16, 100);
-    const ringMat = new THREE.MeshStandardMaterial({ color: 0x6366f1, emissive: 0x6366f1, emissiveIntensity: 2 });
+    const ringGeo = new THREE.TorusGeometry(3.5 + i * 1.2, 0.015, 16, 100);
+    const ringMat = new THREE.MeshStandardMaterial({ 
+      color: i % 2 === 0 ? 0x0ea5e9 : 0x6366f1, 
+      emissive: i % 2 === 0 ? 0x0ea5e9 : 0x6366f1, 
+      emissiveIntensity: 2,
+      transparent: true,
+      opacity: 0.6
+    });
     const ring = new THREE.Mesh(ringGeo, ringMat);
     ring.rotation.x = Math.random() * Math.PI;
     ring.rotation.y = Math.random() * Math.PI;
     scene.add(ring);
-    rings.push(ring);
+    rings.push({
+      mesh: ring,
+      speedX: (Math.random() - 0.5) * 0.01,
+      speedY: (Math.random() - 0.5) * 0.01
+    });
   }
 
-  // Stars background
+  // Distant Star Field
   const starGeo = new THREE.BufferGeometry();
-  const starCount = 2000;
-  const starPos = new Float32Array(starCount * 3);
+  const starCount = 3000;
+  const starPositions = new Float32Array(starCount * 3);
   for (let i = 0; i < starCount * 3; i++) {
-    starPos[i] = (Math.random() - 0.5) * 50;
+    starPositions[i] = (Math.random() - 0.5) * 80;
   }
-  starGeo.setAttribute('position', new THREE.BufferAttribute(starPos, 3));
-  const starMat = new THREE.PointsMaterial({ size: 0.05, color: 0xffffff });
-  const stars = new THREE.Points(starGeo, starMat);
-  scene.add(stars);
+  starGeo.setAttribute('position', new THREE.BufferAttribute(starPositions, 3));
+  const starMat = new THREE.PointsMaterial({ size: 0.04, color: 0xffffff, transparent: true, opacity: 0.5 });
+  const starField = new THREE.Points(starGeo, starMat);
+  scene.add(starField);
 
-  camera.position.z = 10;
+  camera.position.z = 12;
 
-  // Animation Loop
-  const animate = () => {
-    requestAnimationFrame(animate);
+  // Animation Engine
+  const renderLoop = () => {
+    requestAnimationFrame(renderLoop);
 
     const time = Date.now() * 0.001;
     
-    // Animate Core
-    core.rotation.y += 0.005;
-    core.scale.setScalar(1 + Math.sin(time * 2) * 0.05);
+    // Core rotation and pulse
+    core.rotation.y += 0.003;
+    core.rotation.x += 0.002;
+    const pulse = 1 + Math.sin(time * 1.5) * 0.08;
+    core.scale.set(pulse, pulse, pulse);
 
-    // Animate Rings
-    rings.forEach((ring, idx) => {
-      ring.rotation.z += 0.005 * (idx + 1);
-      ring.rotation.x += 0.002;
+    // Orbital dynamics
+    rings.forEach(r => {
+      r.mesh.rotation.x += r.speedX;
+      r.mesh.rotation.y += r.speedY;
     });
+
+    // Slow camera drift
+    camera.position.y = Math.sin(time * 0.5) * 0.5;
+    camera.lookAt(0, 0, 0);
 
     renderer.render(scene, camera);
   };
 
+  // Responsive Handler
   window.addEventListener('resize', () => {
     camera.aspect = window.innerWidth / window.innerHeight;
     camera.updateProjectionMatrix();
     renderer.setSize(window.innerWidth, window.innerHeight);
   });
 
-  animate();
+  renderLoop();
 };
 
-// --- CHART LOGIC ---
-const initChart = () => {
+/**
+ * Real-time SVG Performance Chart System
+ */
+const initPerformanceChart = () => {
   const line = document.getElementById('chart-line');
   const area = document.getElementById('chart-area');
   const tpsDisplay = document.getElementById('live-tps');
   
   if (!line || !area || !tpsDisplay) return;
 
-  let points = Array.from({ length: 20 }, () => 50 + Math.random() * 20);
+  const dataPointsCount = 25;
+  let values = Array.from({ length: dataPointsCount }, () => 40 + Math.random() * 20);
 
   const updateChart = () => {
-    // Shift points
-    points.shift();
-    const lastVal = points[points.length - 1];
-    const nextVal = Math.max(20, Math.min(90, lastVal + (Math.random() - 0.5) * 40));
-    points.push(nextVal);
+    // Simulate network jitter and load spikes
+    values.shift();
+    const lastVal = values[values.length - 1];
+    const trend = (Math.random() - 0.5) * 15;
+    const loadSpike = Math.random() > 0.9 ? 30 : 0;
+    const newVal = Math.max(10, Math.min(95, lastVal + trend + loadSpike));
+    values.push(newVal);
 
-    // Generate path data
-    let d = `M 0 ${100 - points[0]}`;
-    for (let i = 1; i < points.length; i++) {
-      const x = (i / (points.length - 1)) * 100;
-      const y = 100 - points[i];
-      d += ` L ${x} ${y}`;
+    // Build SVG Path String
+    let pathData = `M 0 ${100 - values[0]}`;
+    for (let i = 1; i < values.length; i++) {
+      const x = (i / (values.length - 1)) * 100;
+      const y = 100 - values[i];
+      pathData += ` L ${x} ${y}`;
     }
 
-    line.setAttribute('d', d);
-    area.setAttribute('d', d + ` L 100 100 L 0 100 Z`);
+    line.setAttribute('d', pathData);
+    area.setAttribute('d', `${pathData} L 100 100 L 0 100 Z`);
 
-    // Update display
-    const simulatedTps = Math.floor(600 + nextVal * 8);
-    tpsDisplay.innerText = simulatedTps + "k";
+    // Update Counter (Simulating k-TPS)
+    const currentTps = Math.floor(700 + newVal * 6);
+    tpsDisplay.innerText = currentTps + "k";
   };
 
-  setInterval(updateChart, 1500);
+  // High-frequency updates for fluid movement
+  setInterval(updateChart, 1200);
   updateChart();
 };
 
-// Start
+/**
+ * Application Entry Point
+ */
 document.addEventListener('DOMContentLoaded', () => {
-  initThree();
-  initChart();
+  console.log("ZEPH Engine Initialized");
+  initThreeScene();
+  initPerformanceChart();
 });
