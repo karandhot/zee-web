@@ -1,13 +1,12 @@
 
 import React, { Suspense } from 'react';
 import { Canvas } from '@react-three/fiber';
-import { OrbitControls, Stars, ContactShadows } from '@react-three/drei';
+import { OrbitControls as DreiOrbitControls, Stars, ContactShadows } from '@react-three/drei';
 import { motion } from 'framer-motion';
 import Navbar from './components/Navbar';
 import FloatingCore from './components/FloatingCore';
 import TPSChart from './components/TPSChart';
 import { ZEPHYRIA_FEATURES, ICON_MAP } from './constants';
-// Fixed missing imports for Activity and Database
 import { Zap, Rocket, ChevronRight, Github, Activity, Database } from 'lucide-react';
 
 // Type workarounds for R3F intrinsic elements failing TS checks
@@ -15,6 +14,8 @@ const Color = 'color' as any;
 const Fog = 'fog' as any;
 const AmbientLight = 'ambientLight' as any;
 const PointLight = 'pointLight' as any;
+// Fix: Shadowed OrbitControls with any to resolve prop type mismatches in this environment
+const OrbitControls = DreiOrbitControls as any;
 
 const App: React.FC = () => {
   return (

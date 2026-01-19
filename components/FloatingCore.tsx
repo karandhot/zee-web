@@ -12,8 +12,9 @@ const MeshStandardMaterial = 'meshStandardMaterial' as any;
 const MeshBasicMaterial = 'meshBasicMaterial' as any;
 
 const FloatingCore: React.FC = () => {
-  const coreRef = useRef<THREE.Mesh>(null);
-  const ringRef = useRef<THREE.Group>(null);
+  // Fix: Used any for refs as THREE namespace exports are not recognized correctly in this environment
+  const coreRef = useRef<any>(null);
+  const ringRef = useRef<any>(null);
 
   useFrame((state) => {
     const time = state.clock.getElapsedTime();
