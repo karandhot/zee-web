@@ -1,7 +1,6 @@
-
 import React from 'react';
 import { Cpu, Zap, Database, Shield, Share2, Activity } from 'lucide-react';
-import { TechFeature } from './types';
+import { TechFeature } from './types.ts';
 
 export const ZEPHYRIA_FEATURES: TechFeature[] = [
   {

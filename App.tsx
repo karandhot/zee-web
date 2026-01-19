@@ -1,12 +1,11 @@
-
 import React, { Suspense } from 'react';
 import { Canvas } from '@react-three/fiber';
 import { OrbitControls as DreiOrbitControls, Stars, ContactShadows } from '@react-three/drei';
 import { motion } from 'framer-motion';
-import Navbar from './components/Navbar';
-import FloatingCore from './components/FloatingCore';
-import TPSChart from './components/TPSChart';
-import { ZEPHYRIA_FEATURES, ICON_MAP } from './constants';
+import Navbar from './components/Navbar.tsx';
+import FloatingCore from './components/FloatingCore.tsx';
+import TPSChart from './components/TPSChart.tsx';
+import { ZEPHYRIA_FEATURES, ICON_MAP } from './constants.tsx';
 import { Zap, Rocket, ChevronRight, Github, Activity, Database } from 'lucide-react';
 
 // Type workarounds for R3F intrinsic elements failing TS checks

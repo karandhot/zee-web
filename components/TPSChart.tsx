@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import {
   AreaChart,
@@ -11,7 +10,7 @@ import {
   LineChart,
   Line
 } from 'recharts';
-import { ChartDataPoint } from '../types';
+import { ChartDataPoint } from '../types.ts';
 
 const TPSChart: React.FC = () => {
   const [data, setData] = useState<ChartDataPoint[]>([]);
